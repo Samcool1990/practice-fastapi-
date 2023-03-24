@@ -10,13 +10,13 @@ import time
 
 app = FastAPI()
 
-################################################################################################################
+############# MODEL #####################################################################################
 class Post(BaseModel):
     title: str
     content: str
     published : bool = True
     rating : Optional[int] = None
-
+############DB CONNECTION####################
 while True:
     try: 
         conn =psycopg2.connect(host='localhost',
@@ -39,10 +39,11 @@ while True:
 #     id: int
 #     title: str
 #     content: str
-
+###ARBITRARY ARRAY ############
 my_posts = [{"title": "title for latest post", "content": "content for latest post","id": 1},
             {"title": "title for second post", "content": "content for second post","id": 2}]
 
+###functions#############
 def find_post(id):
     for p in my_posts:
         if p['id'] == id:
@@ -52,7 +53,7 @@ def find_index_post(id):
     for i,p in enumerate(my_posts):
         if p['id'] == id:
             return i
-
+##########URLs############
 @app.get("/") ### root path/router
 async def root():
     return {"message":"Welcome to Suman Pathak's API project"}
