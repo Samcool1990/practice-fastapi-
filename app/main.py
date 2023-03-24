@@ -19,7 +19,7 @@ class Post(BaseModel):
 ############DB CONNECTION####################
 while True:
     try: 
-        conn =psycopg2.connect(host='localhost',
+        conn = psycopg2.connect(host='localhost',
                             database='My FASTAPI DATABSE local',
                             user='postgres',
                             password='321456',
@@ -28,6 +28,7 @@ while True:
         cursor = conn.cursor()
         print("Database connection was succesfull!!")
         break
+    
     except Exception as error:
         print("Connecting to database failed")
         print("error", error)
@@ -51,7 +52,7 @@ def find_post(id):
         
 def find_index_post(id):
     for i,p in enumerate(my_posts):
-        if p['id'] == id:
+       if p['id'] == id: 
             return i
 ##########URLs############
 @app.get("/") ### root path/router
