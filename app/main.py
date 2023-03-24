@@ -15,7 +15,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
+##4:49:47/19:00:26
 # Dependency
 def get_db():
     db = SessionLocal()
