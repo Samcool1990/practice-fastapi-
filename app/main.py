@@ -6,10 +6,23 @@ from random import randrange
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from . import models
+from .database import engine,SessionLocal
+
+
+models.Base.metadata.create_all(bind=engine)
 ################################################################################################################
 
 app = FastAPI()
 
+
+# Dependency
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 ############# MODEL #####################################################################################
 class Post(BaseModel):
     title: str
@@ -28,7 +41,7 @@ while True:
         cursor = conn.cursor()
         print("Database connection was succesfull!!")
         break
-    
+
     except Exception as error:
         print("Connecting to database failed")
         print("error", error)
@@ -99,9 +112,9 @@ def create_posts(post: Post):
 
 @app.get("/posts/{id}")
 def get_post(id: int, response: Response):
-    cursor.execute("""SELECT * FROM posts WHERE id = %s""",(str(id)) )
+    cursor.execute("""SELECT * FROM posts WHERE id = %s """,(str(id),))## this , is need or it will face error
     post = cursor.fetchone()
-
+    print(post)
     # print(test_post)
     # post = find_post(id)
     if not post:
@@ -114,7 +127,7 @@ def get_post(id: int, response: Response):
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int):
-    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", (str(id),))
+    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", (str(id),))## this , is need or it will face error
     deleted_post = cursor.fetchone()
 
     conn.commit()
@@ -133,7 +146,7 @@ def delete_post(id: int):
 @app.put("/posts/{id}")
 def update_post(id:int, post: Post):
     cursor.execute("""UPDATE posts SET title = %s, content = %s, published = %s WHERE id = %s  RETURNING *""",
-                   (post.title,post.content,post.published,(str(id),)) )
+                   (post.title,post.content,post.published,(str(id),)) )## this , is need or it will face error
     updated_post = cursor.fetchone()
     conn.commit()
     # index = find_index_post(id)
