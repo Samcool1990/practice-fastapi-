@@ -66,7 +66,10 @@ async def root():
 
 @app.get("/posts")
 def get_posts():
-    return {"data": my_posts}
+    cursor.execute("""SELECT * FROM posts """)
+    posts = cursor.fetchall()
+    #print(posts)
+    return {"data": posts}
 
 # @app.post("/posts")
 # #def create_posts(payload: dict = Body(...)):
@@ -80,17 +83,26 @@ def get_posts():
 #     return {"data": new_post} #"new_post created"
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_posts(post: Post):   
-    post_dict = post.dict()
-    post_dict['id'] = randrange(0,1000000000000000)
-    my_posts.append(post_dict)
-    return {"data": post_dict} 
+def create_posts(post: Post):  
+    cursor.execute("""INSERT INTO posts (title,content,published)
+                    values (%s,%s,%s) RETURNING * """,
+                    (post.title, post.content, post.published)) ##recommended to prevent SQL injection
+    new_post = cursor.fetchone()
+
+    conn.commit()
+    # post_dict = post.dict()
+    # post_dict['id'] = randrange(0,1000000000000000)
+    # my_posts.append(post_dict)
+    return {"data": new_post} 
 
 
 @app.get("/posts/{id}")
 def get_post(id: int, response: Response):
+    cursor.execute("""SELECT * FROM posts WHERE id = %s""",(str(id)) )
+    post = cursor.fetchone()
 
-    post = find_post(id)
+    # print(test_post)
+    # post = find_post(id)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id {id} was not found")
