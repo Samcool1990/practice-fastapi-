@@ -1,4 +1,4 @@
-from fastapi import FastAPI,Response,status, HTTPException
+from fastapi import FastAPI,Response,status, HTTPException,Depends
 from fastapi.params import Body
 from pydantic import BaseModel
 from typing import Optional
@@ -7,28 +7,22 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
 from . import models
-from .database import engine,SessionLocal
-
+from .database import engine, get_db
+from sqlalchemy.orm import Session
 
 models.Base.metadata.create_all(bind=engine)
 ################################################################################################################
 
 app = FastAPI()
 
-##4:49:47/19:00:26
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+
+#5:22:40/19:00:26
 ############# MODEL #####################################################################################
 class Post(BaseModel):
     title: str
     content: str
     published : bool = True
-    rating : Optional[int] = None
+    #rating : Optional[int] = None
 ############DB CONNECTION####################
 while True:
     try: 
@@ -72,6 +66,13 @@ def find_index_post(id):
 async def root():
     return {"message":"Welcome to Suman Pathak's API project"}
 
+@app.get("/sqlalchemy")
+def tes_posts(db: Session = Depends(get_db)):
+    posts= db.query(models.Post).all()
+    #print(posts)
+    return {"data": posts}
+    #return  {"status": "success"}
+    
 
 # @app.get("/posts")
 # def get_posts():
@@ -79,9 +80,10 @@ async def root():
 
 
 @app.get("/posts")
-def get_posts():
-    cursor.execute("""SELECT * FROM posts """)
-    posts = cursor.fetchall()
+def get_posts(db: Session = Depends(get_db)):
+    posts= db.query(models.Post).all()
+    # cursor.execute("""SELECT * FROM posts """)
+    # posts = cursor.fetchall()
     #print(posts)
     return {"data": posts}
 
@@ -97,26 +99,34 @@ def get_posts():
 #     return {"data": new_post} #"new_post created"
 
 @app.post("/posts", status_code=status.HTTP_201_CREATED)
-def create_posts(post: Post):  
-    cursor.execute("""INSERT INTO posts (title,content,published)
-                    values (%s,%s,%s) RETURNING * """,
-                    (post.title, post.content, post.published)) ##recommended to prevent SQL injection
-    new_post = cursor.fetchone()
+def create_posts(post: Post,db: Session = Depends(get_db)):  
+    # cursor.execute("""INSERT INTO posts (title,content,published)
+    #                 values (%s,%s,%s) RETURNING * """,
+    #                 (post.title, post.content, post.published)) ##recommended to prevent SQL injection
+    # new_post = cursor.fetchone()
 
-    conn.commit()
+    # conn.commit()
     # post_dict = post.dict()
     # post_dict['id'] = randrange(0,1000000000000000)
     # my_posts.append(post_dict)
+    new_post = models.Post(**post.dict())#(title = post.title, content = post.content, published = post.published)
+
+    db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+
     return {"data": new_post} 
 
 
 @app.get("/posts/{id}")
-def get_post(id: int, response: Response):
-    cursor.execute("""SELECT * FROM posts WHERE id = %s """,(str(id),))## this , is need or it will face error
-    post = cursor.fetchone()
-    print(post)
+def get_post(id: int,db: Session = Depends(get_db)):# response: Response):
+    # cursor.execute("""SELECT * FROM posts WHERE id = %s """,(str(id),))## this , is need or it will face error
+    # post = cursor.fetchone()
+    # print(post)
     # print(test_post)
     # post = find_post(id)
+    post = db.query(models.Post).filter(models.Post.id == id).first()
+    #print(post)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with id {id} was not found")
@@ -126,18 +136,21 @@ def get_post(id: int, response: Response):
 
 
 @app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_post(id: int):
-    cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", (str(id),))## this , is need or it will face error
-    deleted_post = cursor.fetchone()
+def delete_post(id: int,db: Session = Depends(get_db)):
+    # cursor.execute("""DELETE FROM posts WHERE id = %s RETURNING *""", (str(id),))## this , is need or it will face error
+    # deleted_post = cursor.fetchone()
 
-    conn.commit()
+    # conn.commit()
     #look for the id to be deleted
     # index = find_index_post(id)
+    deleted_post = db.query(models.Post).filter(models.Post.id == id)    
 
-    if deleted_post == None:
+    if deleted_post.first() == None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                             detail=f"post with id {id} was not found")
-
+    deleted_post.delete(synchronize_session=False)
+    db.commit()
+    
     # my_posts.pop(deleted_post)
     #return {'message': f"post {index} was successfully deleted" }
     return Response(status_code=status.HTTP_204_NO_CONTENT)
