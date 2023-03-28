@@ -38,5 +38,5 @@ def verify_access_token(token: str, credentials_exception):
         raise credentials_exception
 
 def get_current_user():
-    
+    pass
 
