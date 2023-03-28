@@ -16,7 +16,7 @@ from .routers import post, user,auth
 
 models.Base.metadata.create_all(bind=engine)
 
-##6:33:36
+##7:20:24
 ################################################################################################################
 
 app = FastAPI()
