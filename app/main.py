@@ -2,7 +2,7 @@ from fastapi import FastAPI#,#Response,status, HTTPException,Depends
 # from fastapi.params import Body
 from pydantic import BaseModel
 # from typing import Optional,List
-
+from . import config
 # from random import randrange
 
 
@@ -13,9 +13,10 @@ from .database import engine#, get_db
 from .routers import post, user,auth
 
 
+
 models.Base.metadata.create_all(bind=engine)
 
- #8:36:10
+ 
 ################################################################################################################
 
 app = FastAPI()
