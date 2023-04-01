@@ -24,15 +24,16 @@ def get_posts(db: Session = Depends(get_db),
                   current_user: int = Depends(oauth2.get_current_user),
                   limit: int = 10, skip: int = 0, search: Optional[str] = ""): #%20 in postman for space
     
-    posts= db.query(models.Post).filter(
-        models.Post.title.contains(search)).limit(limit).offset(skip).all() # type: ignore #.filter(models.Post.user_id == current_user.id)
+    # posts= db.query(models.Post).filter(
+    #     models.Post.title.contains(search)).limit(limit).offset(skip).all() # type: ignore #.filter(models.Post.user_id == current_user.id)
     
-    results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
-         models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).all()
+    posts = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+         models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(
+        models.Post.title.contains(search)).limit(limit).offset(skip).all()
     # cursor.execute("""SELECT * FROM posts """)
     # posts = cursor.fetchall()
     
-    return results  #{"data": posts})
+    return posts  #{"data": posts})
 
 # @app.post("/posts")
 # #def create_posts(payload: dict = Body(...)):
@@ -67,7 +68,7 @@ def create_posts(post: schemas.PostCreate,db: Session = Depends(get_db),
     return new_post#{"data": new_post} 
 
 
-@router.get("/{id}",response_model=schemas.Post)
+@router.get("/{id}",response_model=schemas.PostOut)
 def get_post(id: int,db: Session = Depends(get_db),
                  current_user: int = Depends(oauth2.get_current_user)):# response: Response):
     # cursor.execute("""SELECT * FROM posts WHERE id = %s """,(str(id),))## this , is need or it will face error
@@ -75,7 +76,11 @@ def get_post(id: int,db: Session = Depends(get_db),
     # print(post)
     # print(test_post)
     # post = find_post(id)
-    post = db.query(models.Post).filter(models.Post.id == id).first()
+    # post = db.query(models.Post).filter(models.Post.id == id).first()
+
+    post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(
+         models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(
+        models.Post.id).filter(models.Post.id == id).first()
     #print(post)
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
