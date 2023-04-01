@@ -4,17 +4,18 @@ from pydantic import BaseModel
 # from typing import Optional,List
 from . import config
 # from random import randrange
-
-
+from .config import settings
+print(settings.database_username)
 from . import models#,schemas,utils
 from .database import engine#, get_db
 # from sqlalchemy.orm import Session  
 
 from .routers import post, user, auth, vote
 
+##alembic
 
-
-models.Base.metadata.create_all(bind=engine)
+#after alembic we really do not needs this below
+# models.Base.metadata.create_all(bind=engine)
 
  
 ################################################################################################################
