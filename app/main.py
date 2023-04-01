@@ -3,10 +3,8 @@ from fastapi import FastAPI#,#Response,status, HTTPException,Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 # from typing import Optional,List
-from . import config
 # from random import randrange
-from .config import settings
-print(settings.database_username)
+
 from . import models#,schemas,utils
 from .database import engine#, get_db
 # from sqlalchemy.orm import Session  
@@ -14,7 +12,7 @@ from .database import engine#, get_db
 from .routers import post, user, auth, vote
 
 ##alembic
-
+#11:34:40
 #after alembic we really do not needs this below
 # models.Base.metadata.create_all(bind=engine)
 
