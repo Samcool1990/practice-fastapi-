@@ -1,5 +1,6 @@
 from fastapi import FastAPI#,#Response,status, HTTPException,Depends
 # from fastapi.params import Body
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 # from typing import Optional,List
 from . import config
@@ -17,10 +18,20 @@ from .routers import post, user, auth, vote
 #after alembic we really do not needs this below
 # models.Base.metadata.create_all(bind=engine)
 
- 
+ #fetch("http://localhost:8000").then(res => res.json()).then(console.log)
 ################################################################################################################
 
 app = FastAPI()
+
+origins = ["*"] # you can specify domains to acces APIs. Like origins = ["https://www.google.com",""https://www.youtube.com""]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(post.router)
 app.include_router(user.router)
