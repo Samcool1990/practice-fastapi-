@@ -1,12 +1,11 @@
 from fastapi import FastAPI#,#Response,status, HTTPException,Depends
 # from fastapi.params import Body
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+# from pydantic import BaseModel
 # from typing import Optional,List
 # from random import randrange
-
-from . import models#,schemas,utils
-from .database import engine#, get_db
+from .config import settings
+# from . import models#,schemas,utils
 # from sqlalchemy.orm import Session  
 
 from .routers import post, user, auth, vote
@@ -18,6 +17,7 @@ from .routers import post, user, auth, vote
 
  #fetch("http://localhost:8000").then(res => res.json()).then(console.log)
 ################################################################################################################
+print(settings.database_name)
 
 app = FastAPI()
 
@@ -35,6 +35,9 @@ app.include_router(post.router)
 app.include_router(user.router)
 app.include_router(auth.router)
 app.include_router(vote.router)
+
+
+
 @app.get("/") ### root path/router
 async def root():
     return {"message":"Welcome to Suman Pathak's API project"}
