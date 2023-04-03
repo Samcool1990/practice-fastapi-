@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # from pydantic import BaseModel
 # from typing import Optional,List
 # from random import randrange
-from .config import settings
+
 # from . import models#,schemas,utils
 # from sqlalchemy.orm import Session  
 
@@ -17,7 +17,6 @@ from .routers import post, user, auth, vote
 
  #fetch("http://localhost:8000").then(res => res.json()).then(console.log)
 ################################################################################################################
-print(settings.database_name)
 
 app = FastAPI()
 
