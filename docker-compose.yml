@@ -7,7 +7,7 @@ services:
     volumes:
       - ./:/usr/src/app
     # env_file:
-    #     - ./.env
+    #     - ./.env  >>>>for file
     environment:
       - DATABASE_HOSTNAME=postgres
       - DATABASE_PORT=5432
