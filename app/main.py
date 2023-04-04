@@ -38,7 +38,7 @@ app.include_router(vote.router)
 
 @app.get("/") ### root path/router
 async def root():
-    return {"message":"Welcome to Suman Pathak's API project"}
+    return {"message":"Welcome to Suman Pathak's API project Successfully Understood FAsTAPI"}
 
 
 # class UpdatePost(BaseModel):
