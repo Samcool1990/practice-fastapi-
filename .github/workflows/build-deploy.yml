@@ -1,9 +1,10 @@
 name: Build and Deploy Code
 
-on: 
-  push:
-    branches:
-      - "main"
+on: [push, pull_request]
+# on: 
+#   push:
+#     branches:
+#       - "main"
   #     #- "another branch"  # mention list of branches
   # pull_request:
   #   branches:
@@ -21,9 +22,8 @@ on:
 
 jobs:
   job1:
-    enviorment:
+    environment:
       name: testing
-
     env:
       DATABSE_HOSTNAME: ${{secrets.DATABSE_HOSTNAME}}
       DATABASE_PORT: ${{secrets.DATABASE_PORT}}
