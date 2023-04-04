@@ -1,0 +1,19 @@
+name: Build and Deploy Code
+
+on: 
+  push:
+    branches:
+      - "main"
+  #     #- "another branch"  # mention list of branches
+  # pull_request:
+  #   branches:
+  #     - "test_branch"  
+jobs:
+  job1:
+    runs-on: ubuntu-latest
+    steps:
+      - name: pulling git repo
+        uses: actions/checkout@v3
+      - name: say hi to Suman 
+        run: acho "Hello Suman"
+        ## can run anything 
