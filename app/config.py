@@ -14,14 +14,5 @@ class Settings(BaseModel):
         env_file = ".env"
 
 
-settings = Settings(
-    database_hostname= 'localhost',
-    database_port= '5432',
-    database_password= '321456',
-    database_name= 'My FASTAPI DATABSE local',
-    database_name= 'postgres', # type: ignore
-    secret_key= '19d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7',
-    algorithm='HS256',
-    access_token_expire_minutes= 60
-)
+settings = Settings()
 print(settings.database_name)
