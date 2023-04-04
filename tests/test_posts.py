@@ -51,7 +51,7 @@ def test_create_post(authorized_client, test_user, test_posts, title, content, p
     assert created_post.title == title
     assert created_post.content == content
     assert created_post.published == published
-    assert created_post.owner_id == test_user['id']
+    assert created_post.user_id == test_user['id']
 
 
 def test_create_post_default_published_true(authorized_client, test_user, test_posts):
@@ -63,7 +63,7 @@ def test_create_post_default_published_true(authorized_client, test_user, test_p
     assert created_post.title == "arbitrary title"
     assert created_post.content == "aasdfjasdf"
     assert created_post.published == True
-    assert created_post.owner_id == test_user['id']
+    assert created_post.user_id == test_user['id']
 
 
 def test_unauthorized_user_create_post(client, test_user, test_posts):
