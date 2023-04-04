@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .routers import post, user, auth, vote
 
-#12:17:00
+
 #after alembic we really do not needs this below
 # models.Base.metadata.create_all(bind=engine)
 
